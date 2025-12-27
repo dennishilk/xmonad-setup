@@ -60,6 +60,11 @@ enable_repos() {
   run "sudo apt update"
 }
 
+install_nvidia() {
+  run "sudo apt install -y linux-headers-\$(uname -r)"
+  run "sudo apt install -y nvidia-driver nvidia-settings"
+}
+
 install_base() {
   run "sudo apt install --no-install-recommends -y \
     xorg xinit dbus-x11 \
@@ -73,11 +78,6 @@ install_base() {
     git curl unzip wget gnupg"
   run "sudo systemctl enable NetworkManager"
   run "sudo systemctl enable lightdm"
-}
-
-install_nvidia() {
-  run "sudo apt install -y linux-headers-\$(uname -r)"
-  run "sudo apt install -y nvidia-driver nvidia-settings"
 }
 
 install_xmonad() {
@@ -94,10 +94,10 @@ deploy_configs() {
     return
   fi
 
-  mkdir -p ~/.xmonad ~/.config/kitty ~/Pictures/wallpapers ~/Pictures/screenshots
-  cp ./xmonad/xmonad.hs ~/.xmonad/xmonad.hs
-  cp ./kitty/kitty.conf ~/.config/kitty/kitty.conf
-  cp ./assets/wallpapers/default.png ~/Pictures/wallpapers/default.png
+  mkdir -p "$HOME/.xmonad" "$HOME/.config/kitty" "$HOME/Pictures/wallpapers" "$HOME/Pictures/screenshots"
+  cp ./xmonad/xmonad.hs "$HOME/.xmonad/xmonad.hs"
+  cp ./kitty/kitty.conf "$HOME/.config/kitty/kitty.conf"
+  cp ./assets/wallpapers/default.png "$HOME/Pictures/wallpapers/default.png"
 }
 
 install_chrome() {
@@ -123,8 +123,8 @@ install_fish_fastfetch() {
     echo "[DRY-RUN] configure fish + fastfetch"
     return
   fi
-  mkdir -p ~/.config/fish
-  cat > ~/.config/fish/config.fish <<'EOF'
+  mkdir -p "$HOME/.config/fish"
+  cat > "$HOME/.config/fish/config.fish" <<'EOF'
 if status is-interactive
     fastfetch
 end
@@ -149,8 +149,8 @@ cleanup_system() {
 # ==========================================================
 
 step "Enable contrib / non-free repositories?" enable_repos
-step "Install base system (X11, LightDM, Audio, Network)?" install_base
 step "Install NVIDIA driver (if needed)?" install_nvidia
+step "Install base system (X11, LightDM, Audio, Network)?" install_base
 step "Install XMonad, Kitty, dmenu and build dependencies?" install_xmonad
 step "Deploy configs (xmonad, kitty, wallpaper)?" deploy_configs
 step "Install Google Chrome?" install_chrome
