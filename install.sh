@@ -97,7 +97,7 @@ deploy_configs() {
   mkdir -p ~/.xmonad ~/.config/kitty ~/Pictures/wallpapers ~/Pictures/screenshots
   cp ./xmonad/xmonad.hs ~/.xmonad/xmonad.hs
   cp ./kitty/kitty.conf ~/.config/kitty/kitty.conf
-  cp ./assets/wallpaper/1.png ~/Pictures/wallpapers/1.png
+  cp ./assets/wallpapers/default.png ~/Pictures/wallpapers/default.png
 }
 
 install_chrome() {
