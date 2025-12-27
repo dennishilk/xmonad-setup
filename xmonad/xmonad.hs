@@ -63,11 +63,8 @@ myManageHook =
 ------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-  -- Compositor
-  spawnOnce "picom --config ~/.config/picom/picom.conf"
-
   -- Wallpaper
-  spawnOnce "feh --bg-fill ~/Pictures/wallpapers/1.png"
+  spawnOnce "feh --bg-fill ~/Pictures/wallpapers/default.png"
 
   -- Wine / Proton compatibility
   setWMName "LG3D"
