@@ -2,7 +2,7 @@
 set -e
 
 # ==========================================================
-# xmonad-setup – Debian 13 (X11 only, generic hardware)
+# Debian 13 XMonad Setup (generic Intel/NVIDIA)
 # ==========================================================
 
 DRY_RUN=false
@@ -33,14 +33,14 @@ step() {
 }
 
 # --------------------------
-# DRY-RUN handling
+# Dry-Run handling
 # --------------------------
 if ask "Enable DRY-RUN mode (no changes will be made)?"; then
   DRY_RUN=true
   echo ">>> DRY-RUN ENABLED"
 fi
 
-if $DRY_RUN && ask "After DRY-RUN, install EVERYTHING automatically?"; then
+if $DRY_RUN && ask "After DRY-RUN, install EVERYTHING automatically (INSTALL ALL)?"; then
   INSTALL_ALL=true
 fi
 
@@ -49,7 +49,7 @@ if ! sudo -v; then
   exit 1
 fi
 
-echo "== xmonad-setup – Debian 13 =="
+echo "== Debian 13 XMonad Setup =="
 
 # ==========================================================
 # Functions
@@ -60,11 +60,6 @@ enable_repos() {
   run "sudo apt update"
 }
 
-install_nvidia() {
-  run "sudo apt install -y linux-headers-\$(uname -r)"
-  run "sudo apt install -y nvidia-driver nvidia-settings"
-}
-
 install_base() {
   run "sudo apt install --no-install-recommends -y \
     xorg xinit dbus-x11 \
@@ -72,12 +67,17 @@ install_base() {
     lightdm lightdm-gtk-greeter \
     pipewire pipewire-audio wireplumber alsa-utils \
     firmware-misc-nonfree \
-    mesa-vulkan-drivers \
+    mesa-vulkan-drivers intel-media-va-driver \
+    xserver-xorg-video-intel \
     fonts-dejavu fonts-jetbrains-mono \
-    git curl wget unzip gnupg"
-
+    git curl unzip wget gnupg"
   run "sudo systemctl enable NetworkManager"
   run "sudo systemctl enable lightdm"
+}
+
+install_nvidia() {
+  run "sudo apt install -y linux-headers-\$(uname -r)"
+  run "sudo apt install -y nvidia-driver nvidia-settings"
 }
 
 install_xmonad() {
@@ -85,52 +85,28 @@ install_xmonad() {
     xmonad xmobar suckless-tools \
     ghc libghc-xmonad-dev libghc-xmonad-contrib-dev \
     kitty dmenu feh scrot \
-    pamixer brightnessctl \
-    picom"
+    pamixer brightnessctl"
 }
 
 deploy_configs() {
   if $DRY_RUN; then
-    echo "[DRY-RUN] deploy xmonad.hs, kitty.conf, picom.conf, wallpaper"
+    echo "[DRY-RUN] deploy xmonad.hs, kitty.conf, wallpaper"
     return
   fi
 
-  mkdir -p ~/.xmonad ~/.config/kitty ~/.config/picom ~/Pictures/wallpapers ~/Pictures/screenshots
-
+  mkdir -p ~/.xmonad ~/.config/kitty ~/Pictures/wallpapers ~/Pictures/screenshots
   cp ./xmonad/xmonad.hs ~/.xmonad/xmonad.hs
   cp ./kitty/kitty.conf ~/.config/kitty/kitty.conf
-  cp ./assets/wallpapers/default.png ~/Pictures/wallpapers/default.png
-
-  # picom config
-  cat > ~/.config/picom/picom.conf <<'EOF'
-backend = "glx";
-vsync = true;
-
-active-opacity = 1.0;
-inactive-opacity = 0.90;
-frame-opacity = 0.90;
-
-opacity-rule = [
-  "90:class_g = 'kitty'",
-  "95:class_g = 'Google-chrome'",
-  "95:class_g = 'firefox'",
-  "100:fullscreen"
-];
-
-shadow = false;
-EOF
+  cp ./assets/wallpaper/1.png ~/Pictures/wallpapers/1.png
 }
 
 install_chrome() {
-  run "sudo apt install -y gnupg curl"
-
+  run "sudo apt install -y gnupg curl wget"
   run "wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg"
-
   run "echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] \
     http://dl.google.com/linux/chrome/deb/ stable main' \
     | sudo tee /etc/apt/sources.list.d/google-chrome.list"
-
   run "sudo apt update"
   run "sudo apt install -y google-chrome-stable"
 }
@@ -143,19 +119,16 @@ install_steam() {
 
 install_fish_fastfetch() {
   run "sudo apt install -y fish fastfetch"
-
   if $DRY_RUN; then
     echo "[DRY-RUN] configure fish + fastfetch"
     return
   fi
-
   mkdir -p ~/.config/fish
   cat > ~/.config/fish/config.fish <<'EOF'
 if status is-interactive
     fastfetch
 end
 EOF
-
   chsh -s /usr/bin/fish
 }
 
@@ -176,14 +149,14 @@ cleanup_system() {
 # ==========================================================
 
 step "Enable contrib / non-free repositories?" enable_repos
-step "Install NVIDIA driver (proprietary)?" install_nvidia
 step "Install base system (X11, LightDM, Audio, Network)?" install_base
-step "Install XMonad, picom and core tools?" install_xmonad
-step "Deploy default configs (xmonad, kitty, picom, wallpaper)?" deploy_configs
+step "Install NVIDIA driver (if needed)?" install_nvidia
+step "Install XMonad, Kitty, dmenu and build dependencies?" install_xmonad
+step "Deploy configs (xmonad, kitty, wallpaper)?" deploy_configs
 step "Install Google Chrome?" install_chrome
-step "Install Steam (enable i386 multiarch)?" install_steam
-step "Install fish shell and fastfetch?" install_fish_fastfetch
-step "Enable zram swap?" enable_zram
+step "Install Steam (enable i386)?" install_steam
+step "Install Fish shell + Fastfetch?" install_fish_fastfetch
+step "Enable ZRAM swap?" enable_zram
 step "Run cleanup?" cleanup_system
 
 echo
