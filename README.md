@@ -128,8 +128,36 @@ The setup installs only what is necessary:
 
 optional: google-chrome,nvidia driver,steam,zram,fish,fastfetch
 
+## 🎬 Video Tutorial / Step-by-Step Guide
 
-[Debian 13 XMonad Setup – Youtube](https://www.youtube.com/watch?v=R3u0lGSSybc)
+🇩🇪  
+Schau dir das **komplette Tutorial-Video** zur Installation und Nutzung unseres Debian 13 XMonad Setup Tools an!  
+Das Video zeigt dir Schritt für Schritt:
+
+- Installation des Base Systems (X11, LightDM, Audio, Network)  
+- Optional NVIDIA-Treiber Setup  
+- XMonad + Kitty + Hotkeys (Win+K, Win+B)  
+- Google Chrome Installation  
+- Konfiguration der `xmonad.hs`  
+- Tipps: `xmonad --recompile && xmonad --restart` nach Änderungen  
+
+[Jetzt Video ansehen](https://www.youtube.com/watch?v=R3u0lGSSybc)
+
+---
+
+🇬🇧  
+Watch the **full tutorial video** for installing and using our Debian 13 XMonad Setup Tool!  
+The video walks you through step by step:
+
+- Installing the base system (X11, LightDM, Audio, Network)  
+- Optional NVIDIA driver setup  
+- XMonad + Kitty + Hotkeys (Win+K, Win+B)  
+- Installing Google Chrome  
+- Editing and configuring `xmonad.hs`  
+- Pro tip: run `xmonad --recompile && xmonad --restart` after changes  
+
+[Watch Video Now](https://www.youtube.com/watch?v=R3u0lGSSybc)
+
 
 ---
 
