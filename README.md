@@ -128,6 +128,9 @@ The setup installs only what is necessary:
 
 optional: google-chrome,nvidia driver,steam,zram,fish,fastfetch
 
+
+[Debian 13 XMonad Setup – Youtube](https://www.youtube.com/watch?v=R3u0lGSSybc)
+
 ---
 
 ## 🚫 Was dieses Projekt NICHT ist / What this project is NOT
