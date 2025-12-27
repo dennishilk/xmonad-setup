@@ -74,7 +74,7 @@ install_base() {
     firmware-misc-nonfree \
     mesa-vulkan-drivers \
     fonts-dejavu fonts-jetbrains-mono \
-    git curl wget unzip"
+    git curl wget unzip gnupg"
 
   run "sudo systemctl enable NetworkManager"
   run "sudo systemctl enable lightdm"
@@ -95,27 +95,17 @@ deploy_configs() {
     return
   fi
 
-  mkdir -p ~/.xmonad
-  mkdir -p ~/.config/kitty
-  mkdir -p ~/.config/picom
-  mkdir -p ~/Pictures/wallpapers
-  mkdir -p ~/Pictures/screenshots
+  mkdir -p ~/.xmonad ~/.config/kitty ~/.config/picom ~/Pictures/wallpapers ~/Pictures/screenshots
 
   cp ./xmonad/xmonad.hs ~/.xmonad/xmonad.hs
   cp ./kitty/kitty.conf ~/.config/kitty/kitty.conf
   cp ./assets/wallpapers/default.png ~/Pictures/wallpapers/default.png
 
-  # picom config (minimal, opacity-ready)
+  # picom config
   cat > ~/.config/picom/picom.conf <<'EOF'
-#################################
-# Backend
-#################################
 backend = "glx";
 vsync = true;
 
-#################################
-# Opacity
-#################################
 active-opacity = 1.0;
 inactive-opacity = 0.90;
 frame-opacity = 0.90;
@@ -127,14 +117,13 @@ opacity-rule = [
   "100:fullscreen"
 ];
 
-#################################
-# Shadows (disabled by default)
-#################################
 shadow = false;
 EOF
 }
 
 install_chrome() {
+  run "sudo apt install -y gnupg curl"
+
   run "wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg"
 
