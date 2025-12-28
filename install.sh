@@ -2,7 +2,7 @@
 set -e
 
 # ==========================================================
-# Debian 13 XMonad Setup (generic Intel/NVIDIA)
+# Debian 13 XMonad Setup (generic Intel/NVIDIA/)
 # ==========================================================
 
 DRY_RUN=false
