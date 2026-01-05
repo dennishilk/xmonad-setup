@@ -111,7 +111,7 @@ Das Setup installiert nur das Nötigste:
 - picom (optional Compositor)
 - grundlegende Fonts
 
-optional: google-chrome,nvidia driver,steam,zram,fish,fastfetch
+optional: google-chrome, nvidia-driver, steam, zram, fish, fastfetch
 
 🇬🇧  
 The setup installs only what is necessary:
@@ -126,7 +126,7 @@ The setup installs only what is necessary:
 - picom (optional compositor)
 - basic fonts
 
-optional: google-chrome,nvidia driver,steam,zram,fish,fastfetch
+optional: google-chrome, nvidia-driver, steam, zram, fish, fastfetch
 
 ## 🎬 Video Tutorial / Step-by-Step Guide
 
