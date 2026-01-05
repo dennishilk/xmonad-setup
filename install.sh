@@ -56,22 +56,33 @@ echo "== Debian 13 XMonad Setup =="
 # ==========================================================
 
 enable_repos() {
-  run "sudo awk '\
-    function has(field, n, target, i) { \
-      for (i = 1; i <= n; i++) { \
-        if (field[i] == target) return 1 \
-      } \
-      return 0 \
-    } \
-    /^[[:space:]]*deb(-src)?[[:space:]]/ && $0 !~ /^[[:space:]]*#/ { \
-      n = split(\$0, fields, /[[:space:]]+/) \
-      if (has(fields, n, \"main\") && !has(fields, n, \"contrib\") \
-          && !has(fields, n, \"non-free\") && !has(fields, n, \"non-free-firmware\")) { \
-        \$0 = \$0 \" contrib non-free non-free-firmware\" \
-      } \
-    } \
-    { print }' /etc/apt/sources.list \
-    | sudo tee /etc/apt/sources.list >/dev/null"
+  if $DRY_RUN; then
+    echo "[DRY-RUN] enable contrib / non-free repositories"
+    return
+  fi
+
+  local awk_script
+  awk_script="$(mktemp)"
+  cat > "$awk_script" <<'AWK'
+function has(field, n, target, i) {
+  for (i = 1; i <= n; i++) {
+    if (field[i] == target) return 1
+  }
+  return 0
+}
+/^[[:space:]]*deb(-src)?[[:space:]]/ && $0 !~ /^[[:space:]]*#/ {
+  n = split($0, fields, /[[:space:]]+/)
+  if (has(fields, n, "main") && !has(fields, n, "contrib") \
+      && !has(fields, n, "non-free") && !has(fields, n, "non-free-firmware")) {
+    $0 = $0 " contrib non-free non-free-firmware"
+  }
+}
+{ print }
+AWK
+
+  sudo awk -f "$awk_script" /etc/apt/sources.list \
+    | sudo tee /etc/apt/sources.list >/dev/null
+  rm -f "$awk_script"
   run "sudo apt update"
 }
 
