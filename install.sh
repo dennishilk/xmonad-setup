@@ -56,7 +56,22 @@ echo "== Debian 13 XMonad Setup =="
 # ==========================================================
 
 enable_repos() {
-  run "sudo sed -i 's/main/main contrib non-free non-free-firmware/' /etc/apt/sources.list"
+  run "sudo awk '\
+    function has(field, n, target, i) { \
+      for (i = 1; i <= n; i++) { \
+        if (field[i] == target) return 1 \
+      } \
+      return 0 \
+    } \
+    /^[[:space:]]*deb(-src)?[[:space:]]/ && $0 !~ /^[[:space:]]*#/ { \
+      n = split(\$0, fields, /[[:space:]]+/) \
+      if (has(fields, n, \"main\") && !has(fields, n, \"contrib\") \
+          && !has(fields, n, \"non-free\") && !has(fields, n, \"non-free-firmware\")) { \
+        \$0 = \$0 \" contrib non-free non-free-firmware\" \
+      } \
+    } \
+    { print }' /etc/apt/sources.list \
+    | sudo tee /etc/apt/sources.list >/dev/null"
   run "sudo apt update"
 }
 
