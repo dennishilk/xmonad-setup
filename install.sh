@@ -61,6 +61,16 @@ enable_repos() {
     return
   fi
 
+  if ! grep -Eq '^[[:space:]]*deb([[:space:]]|$)' /etc/apt/sources.list; then
+    local codename
+    codename="$(. /etc/os-release && echo "${VERSION_CODENAME:-stable}")"
+    cat <<EOF | sudo tee /etc/apt/sources.list >/dev/null
+deb http://deb.debian.org/debian ${codename} main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian ${codename}-updates main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security ${codename}-security main contrib non-free non-free-firmware
+EOF
+  fi
+
   local awk_script
   awk_script="$(mktemp)"
   cat > "$awk_script" <<'AWK'
