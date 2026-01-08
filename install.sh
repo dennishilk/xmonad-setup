@@ -104,8 +104,26 @@ AWK
 }
 
 install_nvidia() {
-  run "sudo apt install -y linux-headers-\$(uname -r)"
-  run "sudo apt install -y nvidia-driver nvidia-settings nvidia-vulkan-icd"
+  if $DRY_RUN; then
+    echo "[DRY-RUN] sudo apt install -y linux-headers-\$(uname -r)"
+    echo "[DRY-RUN] sudo apt install -y nvidia-driver nvidia-settings nvidia-vulkan-icd"
+    return
+  fi
+
+  local kernel_headers
+  kernel_headers="linux-headers-$(uname -r)"
+  if ! sudo apt install -y "$kernel_headers"; then
+    local normalized_headers
+    normalized_headers="linux-headers-$(uname -r | sed 's/+.*//')"
+    if [[ "$normalized_headers" != "$kernel_headers" ]] \
+      && sudo apt install -y "$normalized_headers"; then
+      echo "Installed ${normalized_headers} after normalizing kernel version."
+    else
+      echo "Warning: ${kernel_headers} not found. Installing linux-headers-amd64 instead."
+      sudo apt install -y linux-headers-amd64
+    fi
+  fi
+  sudo apt install -y nvidia-driver nvidia-settings nvidia-vulkan-icd
 }
 
 install_microcode() {
