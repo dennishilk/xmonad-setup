@@ -2,7 +2,7 @@
 set -e
 
 # ==========================================================
-# Debian 13 XMonad Setup (generic Intel/NVIDIA/)
+# Debian 13 XMonad Setup (AMD/NVIDIA friendly)
 # ==========================================================
 
 DRY_RUN=false
@@ -105,7 +105,15 @@ AWK
 
 install_nvidia() {
   run "sudo apt install -y linux-headers-\$(uname -r)"
-  run "sudo apt install -y nvidia-driver nvidia-settings"
+  run "sudo apt install -y nvidia-driver nvidia-settings nvidia-vulkan-icd"
+}
+
+install_microcode() {
+  if grep -qi 'authenticamd' /proc/cpuinfo; then
+    run "sudo apt install -y amd64-microcode"
+  else
+    run "sudo apt install -y intel-microcode"
+  fi
 }
 
 install_base() {
@@ -115,8 +123,7 @@ install_base() {
     lightdm lightdm-gtk-greeter \
     pipewire pipewire-audio wireplumber alsa-utils \
     firmware-misc-nonfree \
-    mesa-vulkan-drivers intel-media-va-driver \
-    xserver-xorg-video-intel \
+    mesa-vulkan-drivers \
     fonts-dejavu fonts-jetbrains-mono \
     git curl unzip wget gnupg"
   run "sudo systemctl enable NetworkManager"
@@ -192,6 +199,7 @@ cleanup_system() {
 # ==========================================================
 
 step "Enable contrib / non-free repositories?" enable_repos
+step "Install CPU microcode (auto-detect)?" install_microcode
 step "Install NVIDIA driver (if needed)?" install_nvidia
 step "Install base system (X11, LightDM, Audio, Network)?" install_base
 step "Install XMonad, Kitty, dmenu and build dependencies?" install_xmonad
