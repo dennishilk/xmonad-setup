@@ -113,15 +113,8 @@ install_nvidia() {
   local kernel_headers
   kernel_headers="linux-headers-$(uname -r)"
   if ! sudo apt install -y "$kernel_headers"; then
-    local normalized_headers
-    normalized_headers="linux-headers-$(uname -r | sed 's/+.*//')"
-    if [[ "$normalized_headers" != "$kernel_headers" ]] \
-      && sudo apt install -y "$normalized_headers"; then
-      echo "Installed ${normalized_headers} after normalizing kernel version."
-    else
-      echo "Warning: ${kernel_headers} not found. Installing linux-headers-amd64 instead."
-      sudo apt install -y linux-headers-amd64
-    fi
+    echo "Warning: ${kernel_headers} not found. Installing linux-headers-amd64 instead."
+    sudo apt install -y linux-headers-amd64
   fi
   sudo apt install -y nvidia-driver nvidia-settings nvidia-vulkan-icd
 }
