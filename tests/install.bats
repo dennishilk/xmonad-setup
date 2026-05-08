@@ -45,3 +45,23 @@ MOCK
   [ "$status" -eq 0 ]
   [ "$output" = "-v" ]
 }
+
+@test "dry-run without install-all only runs confirmed steps" {
+  run bash "${ROOT_DIR}/install.sh" <<< $'y\nn\ny\nn\nn\nn\nn\nn\nn\nn\nn\n'
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"[DRY-RUN] sudo apt install -y amd64-microcode"* || "$output" == *"[DRY-RUN] sudo apt install -y intel-microcode"* ]]
+  [[ "$output" != *"[DRY-RUN] sudo apt install -y nvidia-driver nvidia-settings nvidia-vulkan-icd"* ]]
+  [[ "$output" != *"[DRY-RUN] sudo apt install --no-install-recommends -y     xorg xinit dbus-x11"* ]]
+}
+
+@test "non-dry-run executes sudo commands for selected steps" {
+  run bash "${ROOT_DIR}/install.sh" <<< $'n\nn\ny\nn\nn\nn\nn\nn\nn\nn\nn\n'
+
+  [ "$status" -eq 0 ]
+
+  run cat "${SUDO_LOG}"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"-v"* ]]
+  [[ "$output" == *"apt install -y amd64-microcode"* || "$output" == *"apt install -y intel-microcode"* ]]
+}
