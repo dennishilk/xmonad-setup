@@ -134,7 +134,7 @@ optional: google-chrome, nvidia-driver, steam, zram, fish, fastfetch
 Schau dir das **komplette Tutorial-Video** zur Installation und Nutzung unseres Debian 13 XMonad Setup Tools an!  
 Das Video zeigt dir Schritt für Schritt:
 
-- Installation des Base Systems (X11, LightDM, Audio, Network)  
+- Installation des Basissystems (X11, LightDM, Audio, Network)  
 - Optional NVIDIA-Treiber Setup  
 - XMonad + Kitty + Hotkeys (Win+K, Win+B)  
 - Google Chrome Installation  
@@ -192,3 +192,4 @@ git clone https://github.com/dennishilk/xmonad-setup.git
 cd xmonad-setup
 chmod +x install.sh
 ./install.sh
+```

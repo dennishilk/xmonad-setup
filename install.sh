@@ -120,10 +120,21 @@ install_nvidia() {
 }
 
 install_microcode() {
-  if grep -qi 'authenticamd' /proc/cpuinfo; then
+  local arch vendor
+  arch="$(dpkg --print-architecture)"
+  vendor="$(awk -F: '/vendor_id/ {gsub(/^[ \t]+/, "", $2); print tolower($2); exit}' /proc/cpuinfo || true)"
+
+  if [[ "$arch" != "amd64" && "$arch" != "i386" ]]; then
+    echo "Skipping CPU microcode installation: unsupported architecture '${arch}'."
+    return
+  fi
+
+  if [[ "$vendor" == "authenticamd" ]]; then
     run "sudo apt install -y amd64-microcode"
-  else
+  elif [[ "$vendor" == "genuineintel" ]]; then
     run "sudo apt install -y intel-microcode"
+  else
+    echo "Skipping CPU microcode installation: unsupported or unknown CPU vendor '${vendor:-unknown}'."
   fi
 }
 
